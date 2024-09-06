@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="/templates/styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .content-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            background: rgba(0, 0, 0, 0); /* Прозорий чорний фон для текстового контейнера */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px; /* Додаємо трохи відступів */
+        }
+        header {
+            margin: 20px;
+        }
+        header h1 {
+            font-size: 5em; /* Великий розмір шрифту */
+            color: white;
+            margin: 0;
+            animation: fadeIn 4s  forwards; /* Анімація для заголовка */
+        }
+         @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        main, p, table, a {
+            background: transparent; /* Прозорий фон для основних елементів */
+            color: white; /* Білий колір тексту */
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 20px; /* Відступ зверху для таблиці */
+        }
+        table th, table td {
+            background: rgba(0, 0, 0, 0.1); /* Напівпрозорий фон для клітинок таблиці */
+            padding: 8px;
+        }
+        a {
+            text-decoration: none;
+            color: #fff; /* Колір посилань */
+            margin: 5px; /* Відступи між посиланнями */
+        }
+        a:hover {
+            color: #ddd; /* Світліший колір при наведенні */
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="video-container">
+    <video autoplay loop muted>
+        <source src="https://eu-central.storage.cloudconvert.com/tasks/37adc525-01f2-4fee-b6a9-748c482acda9/videoforFrontPage.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20240901%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20240901T185930Z&X-Amz-Expires=86400&X-Amz-Signature=9b6a5762e007696d6075f61561d23dbda0823e37f087c1a9062c667bee377e47&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22videoforFrontPage.mp4%22&response-content-type=video%2Fmp4&x-id=GetObject" type="video/mp4">
+
+        Ваш браузер не підтримує відео тег HTML5.
+    </video>
+</div>
+
+<div class="content-container">
+    <header>
+        <h1>Short & CUT</h1>
+    </header>
+    <main>
+        <p th:text="'Hello'">You can shorten any link</p>
+    </main>
+
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
+
+    <h1>Shortened URLs are created by registered users</h1>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Short URL</th>
+            <th>Original URL</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="url, iterStat : ${urls}" th:id="'row-' + ${url.shortUrl}">
+            <td>
+                <a th:href="${url.shortUrl}" th:text="${url.shortUrl}"
+                   th:class="${url.expiryDate != null and url.expiryDate.isBefore(T(java.time.LocalDateTime).now()) ? 'inactive-link' : 'active-link' }">
+                    Short URL</a>
+            </td>
+            <td><a th:href="${url.originalUrl}" th:text="${url.originalUrl}">Original URL</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

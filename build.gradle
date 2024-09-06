@@ -1,0 +1,149 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.flywaydb.flyway' version '9.16.3'
+    id 'jacoco'
+    id("org.barfuin.gradle.jacocolog") version "3.1.0"
+
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  //  implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-security:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.3.2'
+
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation 'jakarta.servlet:jakarta.servlet-api'
+
+    implementation 'com.h2database:h2'
+    implementation 'org.flywaydb:flyway-core:10.10.0'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+
+    compileOnly 'org.projectlombok:lombok'
+    // implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+    implementation 'org.postgresql:postgresql:42.6.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.3.2'
+
+    implementation 'org.webjars:webjars-locator-core:0.58'
+    implementation 'io.github.classgraph:classgraph:4.8.171'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:3.3.2'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.2'
+
+    implementation 'org.ehcache:ehcache:3.10.8'
+    implementation 'javax.cache:cache-api:1.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-cache:3.3.2'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    // implementation 'io.springfox:springfox-swagger2:3.0.0'
+    // implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.2'
+
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
+    implementation platform('org.testcontainers:testcontainers-bom:1.20.1')
+// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+
+
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.example.urlshortener.DemoApplication'
+        )
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+task flywayReset {
+    doLast {
+        flywayClean
+        flywayMigrate
+    }
+}
+
+test {
+    // Enable JUnit 5 (Gradle 4.6+).
+    useJUnitPlatform()
+
+    // Always run tests, even when nothing changed.
+    dependsOn 'cleanTest'
+
+    // Show test results.
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    finalizedBy jacocoTestReport
+    jacoco {
+        destinationFile = layout.buildDirectory.file('jacoco/jacocoTest.exec').get().asFile
+        classDumpDir = layout.buildDirectory.dir('jacoco/classpathdumps').get().asFile
+    }
+}
+
+
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+
+        rule {
+            enabled = false
+            element = 'CLASS'
+            includes = ['org.gradle.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 0.80
+            }
+        }
+    }
+}
+

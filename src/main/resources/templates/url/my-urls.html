@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Shortened URLs</title>
+    <style>
+      .active-link {
+            color: green;
+        }
+        .inactive-link {
+            color: red;
+        }
+          table {
+           width:100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.1); /* Прозорий фон для таблиці */
+            border: 1px solid white;
+            overflow-y: scroll; /* Прокрутка таблиці */
+            max-height: 60vh; /* Максимальна вис ота таблиці */
+            display: block;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            color: white;
+            border-bottom: 1px solid white;
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Стилі для заголовка */
+        h1 {
+            color: white;
+            margin: 20px;
+            text-align: center;
+        }
+
+        /* Стилі для кнопок */
+        .btn-container {
+            margin: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Фон з відео */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="video-container">
+    <video autoplay loop muted>
+        <source src="https://eu-central.storage.cloudconvert.com/tasks/37adc525-01f2-4fee-b6a9-748c482acda9/videoforFrontPage.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20240901%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20240901T185930Z&X-Amz-Expires=86400&X-Amz-Signature=9b6a5762e007696d6075f61561d23dbda0823e37f087c1a9062c667bee377e47&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22videoforFrontPage.mp4%22&response-content-type=video%2Fmp4&x-id=GetObject" type="video/mp4">
+
+        Ваш браузер не підтримує відео тег HTML5.
+    </video>
+</div>
+
+<h1>My Shortened URLs</h1>
+
+<div class="table-container">
+    <table>
+        <thead>
+        <tr>
+            <th>Short URL</th>
+            <th>Original URL</th>
+            <th>Created At</th>
+            <th>Expiry Date</th>
+            <th>Visit Count</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="url, iterStat : ${urls}" th:id="'row-' + ${url.shortUrl}">
+            <td>
+                <a th:href="${url.shortUrl}" th:text="${url.shortUrl}"
+                   th:class="${url.expiryDate != null and url.expiryDate.isBefore(T(java.time.LocalDateTime).now()) ? 'inactive-link' : 'active-link' }">
+                    Short URL
+                </a>
+            </td>
+            <td><a th:href="${url.originalUrl}" th:text="${url.originalUrl}">Original URL</a></td>
+            <td th:text="${#temporals.format(url.createdAt, 'yyyy-MM-dd HH:mm:ss')}">Created At</td>
+            <td th:text="${url.expiryDate != null ? #temporals.format(url.expiryDate, 'yyyy-MM-dd HH:mm:ss') : 'N/A'}">Expiry Date</td>
+
+            <td id="visitCount-${url.shortUrl}" th:text="${url.visitCount}">Visit Count</td>
+            <td>
+                <form th:action="@{'/url/update/' + ${url.shortUrl}}" method="post" style="display:inline;">
+                    <input type="datetime-local" name="newExpiryDate" value="2024-09-02T22:05:37" required>
+                    <button type="submit">Update</button>
+                </form>
+
+                <form th:action="@{'/url/delete/' + ${url.shortUrl}}" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="btn-container">
+    <a href="/url/shorten" class="btn">Shorten</a>
+    <a href="/logout" class="btn">Logout</a>
+</div>
+</body>
+</html>

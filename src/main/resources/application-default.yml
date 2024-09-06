@@ -1,0 +1,53 @@
+#application-default.yml
+spring:
+  datasource:
+    url: jdbc:h2:mem:matoks
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    defer-datasource-initialization: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        use_sql_comments: true
+        open-in-view: false
+  cache:
+
+    type: ehcache  # Use Ehcache
+    ehcache:
+      config: classpath:ehcache.xml  # Path to config file Ehcache
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+
+  h2:
+    console:
+     enabled: true
+     path: /h2-console
+server:
+  port: 8080
+
+
+logging:
+  level:
+    org.springframework: INFO
+    org.hibernate: ERROR
+    com.yourpackage: DEBUG
+  file:
+    name: logs/application.log
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
+
+    enabled: true  #  Switch on default in local dev

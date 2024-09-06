@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shorten URL</title>
+    <style>
+        /* Ваші стилі залишаються без змін */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .form-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            background: rgba(0, 0, 0, 0);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0);
+            text-align: center;
+        }
+        h1, h2, label {
+            color: white;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .short-url-container {
+            margin-top: 20px;
+        }
+        .short-url-container p {
+            font-size: 18px;
+            font-weight: bold;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="video-container">
+    <video autoplay loop muted>
+        <source src="https://eu-central.storage.cloudconvert.com/tasks/37adc525-01f2-4fee-b6a9-748c482acda9/videoforFrontPage.mp4" type="video/mp4">
+        Ваш браузер не підтримує відео тег HTML5.
+    </video>
+</div>
+
+<div class="form-container">
+    <h1>Shorten URL</h1>
+    <form th:action="@{/url/shorten}" th:object="${urlRequest}" method="post">
+        <label for="originalUrl">Original URL:</label>
+        <input type="text" id="originalUrl" th:field="*{originalUrl}" required>
+
+        <label for="activeDuration">Active Duration:</label>
+        <select id="activeDuration" th:field="*{expiryDate}">
+            <option value="PT5M">5 minutes</option>
+            <option value="PT10M">10 minutes</option>
+            <option value="PT30M">30 minutes</option>
+            <option value="PT1H">1 hour</option>
+            <option value="P1D">1 day</option>
+            <option value="P7D">7 days</option>
+        </select>
+
+        <button type="submit">Shorten</button>
+    </form>
+
+    <!-- Відображення скороченого URL після його створення -->
+    <div class="short-url-container" th:if="${shortUrl != null}">
+        <h2>Your shortened URL:</h2>
+        <p><a th:href="${shortUrl.shortUrl}" th:text="${shortUrl.shortUrl}" target="_blank"></a></p>
+    </div>
+
+    <!-- Відображення повідомлень про помилки -->
+    <div th:if="${error != null}" style="color: red;">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Відображення повідомлень про успіх -->
+    <div th:if="${message != null}" style="color: green;">
+        <p th:text="${message}"></p>
+    </div>
+
+    <!-- Кнопки My URLs і Logout -->
+    <div>
+        <a href="/url/my-urls" class="btn">My URLs</a>
+        <a href="/logout" class="btn">Logout</a>
+    </div>
+</div>
+
+</body>
+</html>

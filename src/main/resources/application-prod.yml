@@ -1,0 +1,14 @@
+#application-prod.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://ce0lkuo944ch99.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dcq36r0njtnvhf
+    username: u3k8fbc5ee7s1
+    password: paa58e6679ac9986d5adcf00a5e4f1f526babe5165a74fb7b4b5d7960ec9cb4c0
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  server:
+    port: ${PORT:8080}
